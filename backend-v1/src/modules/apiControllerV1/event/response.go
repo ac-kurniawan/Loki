@@ -36,9 +36,13 @@ func ResponseToEvent(data EventResponse) event.Event {
 	for _, e := range data.Schedule {
 		scheduleData = append(scheduleData, event.Schedule{
 			Location: event.Location{
-				Address:   e.Location.Address,
-				Longitude: e.Location.Longitude,
-				Latitude:  e.Location.Latitude,
+				Address:     e.Location.Address,
+				District:    e.Location.District,
+				SubDistrict: e.Location.SubDistrict,
+				City:        e.Location.City,
+				Province:    e.Location.Province,
+				Longitude:   e.Location.Longitude,
+				Latitude:    e.Location.Latitude,
 			},
 			Date:         e.Date,
 			Start:        e.Start,
@@ -60,9 +64,13 @@ func NewEventResponse(data event.Event) EventResponse {
 	for _, e := range data.Schedule {
 		scheduleData = append(scheduleData, ScheduleResponse{
 			Location: LocationResponse{
-				Address:   e.Location.Address,
-				Longitude: e.Location.Longitude,
-				Latitude:  e.Location.Latitude,
+				Address:     e.Location.Address,
+				District:    e.Location.District,
+				SubDistrict: e.Location.SubDistrict,
+				City:        e.Location.City,
+				Province:    e.Location.Province,
+				Longitude:   e.Location.Longitude,
+				Latitude:    e.Location.Latitude,
 			},
 			Date:         e.Date,
 			Start:        e.Start,

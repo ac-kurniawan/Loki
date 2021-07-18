@@ -34,9 +34,13 @@ func RequestToSchedule(request []ScheduleRequest) []event.Schedule {
 	for _, e := range request {
 		scheduleData = append(scheduleData, event.Schedule{
 			Location: event.Location{
-				Address:   e.Location.Address,
-				Longitude: e.Location.Longitude,
-				Latitude:  e.Location.Latitude,
+				Address:     e.Location.Address,
+				District:    e.Location.District,
+				SubDistrict: e.Location.SubDistrict,
+				City:        e.Location.City,
+				Province:    e.Location.Province,
+				Longitude:   e.Location.Longitude,
+				Latitude:    e.Location.Latitude,
 			},
 			Date:         e.Date,
 			Start:        e.Start,
@@ -61,9 +65,13 @@ func NewEventRequest(data event.Event) EventRequest {
 	for _, e := range data.Schedule {
 		scheduleData = append(scheduleData, ScheduleRequest{
 			Location: LocationRequest{
-				Address:   e.Location.Address,
-				Longitude: e.Location.Longitude,
-				Latitude:  e.Location.Latitude,
+				Address:     e.Location.Address,
+				District:    e.Location.District,
+				SubDistrict: e.Location.SubDistrict,
+				City:        e.Location.City,
+				Province:    e.Location.Province,
+				Longitude:   e.Location.Longitude,
+				Latitude:    e.Location.Latitude,
 			},
 			Date:         e.Date,
 			Start:        e.Start,

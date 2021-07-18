@@ -2,14 +2,15 @@ package mongoRepository
 
 import (
 	"antriin/src/business/event"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
 
 type EventMongo struct {
-	ID        string          `bson:"_id,omitempty"`
-	Name      string          `bson:"name"`
-	CreatorID string          `bson:"creator_id"`
-	Schedule  []ScheduleMongo `bson:"schedule"`
+	ID        primitive.ObjectID `bson:"_id,omitempty"`
+	Name      string             `bson:"name"`
+	CreatorID string             `bson:"creator_id"`
+	Schedule  []ScheduleMongo    `bson:"schedule"`
 }
 
 type ScheduleMongo struct {
@@ -37,6 +38,10 @@ func ToEvent(data EventMongo) event.Event {
 		scheduleData = append(scheduleData, event.Schedule{
 			Location: event.Location{
 				Address:   e.Location.Address,
+				District:    e.Location.District,
+				SubDistrict: e.Location.SubDistrict,
+				City:        e.Location.City,
+				Province:    e.Location.Province,
 				Longitude: e.Location.Longitude,
 				Latitude:  e.Location.Latitude,
 			},
@@ -48,7 +53,7 @@ func ToEvent(data EventMongo) event.Event {
 		})
 	}
 	return event.Event{
-		ID:        data.ID,
+		ID:        data.ID.String(),
 		Name:      data.Name,
 		CreatorID: data.CreatorID,
 		Schedule:  scheduleData,
@@ -61,6 +66,10 @@ func NewScheduleCollection(data []event.Schedule) []ScheduleMongo {
 		scheduleData = append(scheduleData, ScheduleMongo{
 			Location: LocationMongo{
 				Address:   e.Location.Address,
+				District:    e.Location.District,
+				SubDistrict: e.Location.SubDistrict,
+				City:        e.Location.City,
+				Province:    e.Location.Province,
 				Longitude: e.Location.Longitude,
 				Latitude:  e.Location.Latitude,
 			},
@@ -76,8 +85,9 @@ func NewScheduleCollection(data []event.Schedule) []ScheduleMongo {
 
 func NewEventCollection(data event.Event) EventMongo {
 	scheduleData := NewScheduleCollection(data.Schedule)
+	id,_ := primitive.ObjectIDFromHex(data.ID)
 	return EventMongo{
-		ID:        data.ID,
+		ID:        id,
 		Name:      data.Name,
 		CreatorID: data.CreatorID,
 		Schedule:  scheduleData,

@@ -43,7 +43,7 @@ func (h Handler) CreateScheduleByEvent(ctx echo.Context) error {
 
 func (h Handler) GetEventsByCreatorID(ctx echo.Context) error {
 	creatorId := ctx.QueryParam("creatorId")
-	result, err := h.eventService.GetEventsByCreatorID(creatorId)
+	cnt, result, err := h.eventService.GetEventsByCreatorID(creatorId)
 	if err != nil {
 		msg := err.Error()
 		return ctx.JSON(http.StatusInternalServerError,
@@ -56,7 +56,10 @@ func (h Handler) GetEventsByCreatorID(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK,
-		response.Success(200, payload))
+		response.Success(200, map[string]interface{}{
+			"count": cnt,
+			"rows": payload,
+		}))
 }
 
 func (h Handler) SetEvent(ctx echo.Context) error {

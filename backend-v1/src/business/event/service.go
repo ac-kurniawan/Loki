@@ -2,7 +2,7 @@ package event
 
 type IEvent interface {
 	SetEvent(data Event, creatorID string) (Event, error)
-	GetEventsByCreatorID(creatorID string) ([]Event, error)
+	GetEventsByCreatorID(creatorID string) (int32, []Event, error)
 	GetEventById(id string) (Event,error)
 
 	CreateSchedules(eventId string, schedules []Schedule) (Event,error)
@@ -14,7 +14,8 @@ type Service struct {
 	repo IEventRepository
 }
 
-func (s Service) GetEventsByCreatorID(creatorID string) ([]Event, error) {
+func (s Service) GetEventsByCreatorID(creatorID string) (int32, []Event,
+	error) {
 	return s.repo.GetEventsByCreatorID(creatorID)
 }
 

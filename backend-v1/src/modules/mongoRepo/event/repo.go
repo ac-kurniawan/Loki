@@ -16,40 +16,48 @@ type Repository struct {
 	collection *mongo.Collection
 }
 
-func (r Repository) GetEventsByCreatorID(creatorID string) ([]event.Event,
+func (r Repository) GetEventsByCreatorID(creatorID string) (int32,
+	[]event.Event,
 	error) {
-	opts := options.Find().SetLimit(20).SetSkip(0)
-	docs, err := r.collection.Find(context.TODO(), bson.D{{"creator_id",
-		creatorID}},
-		opts)
+	matchStage := bson.D{{"$match", bson.D{{"creator_id", creatorID}}}}
+	facedStage := bson.D{{"$facet", bson.D{
+		{"count", bson.A{bson.D{{"$count", "value"}}}},
+		{"data", bson.A{
+			bson.D{{"$sort", bson.D{{"_id", -1}}}},
+			bson.D{{"$skip", 0}},
+			bson.D{{"$limit", 20}},
+		}},
+	}}}
+	unwindStage := bson.D{{"$unwind", "$count"}}
+	setStage := bson.D{{"$set", bson.D{{"count", "$count.value"}}}}
+
+	aggr, err := r.collection.Aggregate(context.TODO(), mongo.Pipeline{
+		matchStage,
+		facedStage,
+		unwindStage,
+		setStage,
+	})
 	if err != nil {
-		debug.Error("eventRepository", err.Error())
-		return []event.Event{}, err
+		panic(err)
 	}
 
-	// data mapping
-	var result []event.Event
-	for docs.Next(context.TODO()) {
-		var data EventMongo
-		err := docs.Decode(&data)
-		if err != nil {
-			debug.Error("EventRepository", err.Error())
-			return nil, err
-		}
-		result = append(result, ToEvent(data))
+	type dataType struct {
+		Count int32         `bson:"count" json:"count"`
+		Data  []EventMongo `bson:"data" json:"data"`
 	}
 
-	if err := docs.Err(); err != nil {
+	var result []dataType
+	if err = aggr.All(context.TODO(), &result); err != nil {
 		debug.Error("EventRepository", err.Error())
-		return nil, err
+		return -1, []event.Event{}, err
 	}
 
-	if err := docs.Close(context.TODO()); err != nil {
-		debug.Error("EventRepository", err.Error())
-		return nil, err
+	var dataEvent []event.Event
+	for _, e := range result[0].Data {
+		dataEvent = append(dataEvent, ToEvent(e))
 	}
 
-	return result, nil
+	return result[0].Count, dataEvent, nil
 }
 
 func (r Repository) SetEvent(data event.Event, creatorID string) (event.Event,
@@ -63,7 +71,7 @@ func (r Repository) SetEvent(data event.Event, creatorID string) (event.Event,
 		return event.Event{}, err
 	}
 
-	data.ID = res.InsertedID.(primitive.ObjectID).String()
+	data.ID = res.InsertedID.(primitive.ObjectID).Hex()
 
 	return data, nil
 }
