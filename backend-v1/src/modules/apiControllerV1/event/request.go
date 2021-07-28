@@ -16,6 +16,7 @@ type ScheduleRequest struct {
 	Start        time.Time       `json:"start"`
 	End          time.Time       `json:"end"`
 	Capacity     uint            `json:"capacity"`
+	Progress     uint            `json:"progress"`
 	AttendeeType string          `json:"attendeeType"`
 }
 
@@ -46,6 +47,7 @@ func RequestToSchedule(request []ScheduleRequest) []event.Schedule {
 			Start:        e.Start,
 			End:          e.End,
 			Capacity:     e.Capacity,
+			Progress:     e.Progress,
 			AttendeeType: e.AttendeeType,
 		})
 	}
@@ -77,6 +79,7 @@ func NewEventRequest(data event.Event) EventRequest {
 			Start:        e.Start,
 			End:          e.End,
 			Capacity:     e.Capacity,
+			Progress:     e.Progress,
 			AttendeeType: e.AttendeeType,
 		})
 	}

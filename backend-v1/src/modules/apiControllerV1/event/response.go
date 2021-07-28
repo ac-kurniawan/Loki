@@ -18,6 +18,7 @@ type ScheduleResponse struct {
 	Start        time.Time        `json:"start"`
 	End          time.Time        `json:"end"`
 	Capacity     uint             `json:"capacity"`
+	Progress     uint             `json:"progress"`
 	AttendeeType string           `json:"attendeeType"`
 }
 
@@ -48,6 +49,7 @@ func ResponseToEvent(data EventResponse) event.Event {
 			Start:        e.Start,
 			End:          e.End,
 			Capacity:     e.Capacity,
+			Progress:     e.Progress,
 			AttendeeType: e.AttendeeType,
 		})
 	}
@@ -76,6 +78,7 @@ func NewEventResponse(data event.Event) EventResponse {
 			Start:        e.Start,
 			End:          e.End,
 			Capacity:     e.Capacity,
+			Progress:     e.Progress,
 			AttendeeType: e.AttendeeType,
 		})
 	}

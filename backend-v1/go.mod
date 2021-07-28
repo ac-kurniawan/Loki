@@ -4,6 +4,8 @@ go 1.13
 
 require (
 	github.com/Nerzal/gocloak/v8 v8.5.0
+	github.com/ThreeDotsLabs/watermill v1.1.1
+	github.com/ThreeDotsLabs/watermill-amqp v1.1.2
 	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
 	github.com/kamva/mgm/v3 v3.3.0
 	github.com/labstack/echo/v4 v4.3.0

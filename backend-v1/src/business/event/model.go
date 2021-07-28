@@ -16,6 +16,7 @@ type Schedule struct {
 	Start        time.Time
 	End          time.Time
 	Capacity     uint
+	Progress     uint
 	AttendeeType string
 }
 

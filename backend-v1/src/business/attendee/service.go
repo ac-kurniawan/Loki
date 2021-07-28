@@ -14,6 +14,7 @@ type IAttendee interface {
 // Service AttendeeService constructor and method
 type Service struct {
 	attendeeRepository IAttendeeRepository
+	publisher Publish
 }
 
 func (a Service) GetAttendeeById(id int) (*Attendee, error) {
@@ -22,7 +23,10 @@ func (a Service) GetAttendeeById(id int) (*Attendee, error) {
 
 func (a Service) SetAttendee(data Attendee) error {
 	err := a.attendeeRepository.SetAttendee(data)
-
+	err = a.publisher.AttendeeCreated(AttendeeCreatedSchema{
+		EventId: data.EventId,
+		ScheduleIndex: 0,
+	})
 	return err
 }
 
@@ -36,6 +40,7 @@ func (a Service) GetAttendees(page int) ([]Attendee, error) {
 }
 
 // NewAttendee attendee builder service
-func NewAttendee(attendeeRepository IAttendeeRepository) IAttendee  {
-	return &Service{attendeeRepository}
+func NewAttendee(attendeeRepository IAttendeeRepository,
+	publisher Publish) IAttendee  {
+	return &Service{attendeeRepository, publisher}
 }

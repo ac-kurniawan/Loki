@@ -19,6 +19,7 @@ type ScheduleMongo struct {
 	Start        time.Time     `bson:"start"`
 	End          time.Time     `bson:"end"`
 	Capacity     uint          `bson:"capacity"`
+	Progress     uint          `bson:"progress"`
 	AttendeeType string        `bson:"attendee_type"`
 }
 
@@ -37,23 +38,24 @@ func ToEvent(data EventMongo) event.Event {
 	for _, e := range data.Schedule {
 		scheduleData = append(scheduleData, event.Schedule{
 			Location: event.Location{
-				Address:   e.Location.Address,
+				Address:     e.Location.Address,
 				District:    e.Location.District,
 				SubDistrict: e.Location.SubDistrict,
 				City:        e.Location.City,
 				Province:    e.Location.Province,
-				Longitude: e.Location.Longitude,
-				Latitude:  e.Location.Latitude,
+				Longitude:   e.Location.Longitude,
+				Latitude:    e.Location.Latitude,
 			},
 			Date:         e.Date,
 			Start:        e.Start,
 			End:          e.End,
 			Capacity:     e.Capacity,
+			Progress:     e.Progress,
 			AttendeeType: e.AttendeeType,
 		})
 	}
 	return event.Event{
-		ID:        data.ID.String(),
+		ID:        data.ID.Hex(),
 		Name:      data.Name,
 		CreatorID: data.CreatorID,
 		Schedule:  scheduleData,
@@ -65,18 +67,19 @@ func NewScheduleCollection(data []event.Schedule) []ScheduleMongo {
 	for _, e := range data {
 		scheduleData = append(scheduleData, ScheduleMongo{
 			Location: LocationMongo{
-				Address:   e.Location.Address,
+				Address:     e.Location.Address,
 				District:    e.Location.District,
 				SubDistrict: e.Location.SubDistrict,
 				City:        e.Location.City,
 				Province:    e.Location.Province,
-				Longitude: e.Location.Longitude,
-				Latitude:  e.Location.Latitude,
+				Longitude:   e.Location.Longitude,
+				Latitude:    e.Location.Latitude,
 			},
 			Date:         e.Date,
 			Start:        e.Start,
 			End:          e.End,
 			Capacity:     e.Capacity,
+			Progress:     e.Progress,
 			AttendeeType: e.AttendeeType,
 		})
 	}
@@ -85,7 +88,7 @@ func NewScheduleCollection(data []event.Schedule) []ScheduleMongo {
 
 func NewEventCollection(data event.Event) EventMongo {
 	scheduleData := NewScheduleCollection(data.Schedule)
-	id,_ := primitive.ObjectIDFromHex(data.ID)
+	id, _ := primitive.ObjectIDFromHex(data.ID)
 	return EventMongo{
 		ID:        id,
 		Name:      data.Name,
